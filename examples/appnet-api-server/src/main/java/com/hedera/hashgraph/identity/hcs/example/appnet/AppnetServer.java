@@ -7,7 +7,7 @@ import com.hedera.hashgraph.identity.hcs.HcsIdentityNetwork;
 import com.hedera.hashgraph.identity.hcs.HcsIdentityNetworkBuilder;
 import com.hedera.hashgraph.identity.hcs.MessageListener;
 import com.hedera.hashgraph.identity.hcs.did.HcsDidMessage;
-import com.hedera.hashgraph.identity.hcs.example.appnet.handlers.DemoHandler;
+import com.hedera.hashgraph.identity.hcs.example.appnet.handlers.MembershipHandler;
 import com.hedera.hashgraph.identity.hcs.example.appnet.handlers.DidHandler;
 import com.hedera.hashgraph.identity.hcs.example.appnet.handlers.VcHandler;
 import com.hedera.hashgraph.identity.hcs.vc.HcsVcMessage;
@@ -49,7 +49,7 @@ public class AppnetServer {
 
   private DidHandler didHandler;
   private VcHandler vcHandler;
-  private DemoHandler demoHandler;
+  private MembershipHandler membershipHandler;
 
   private RatpackServer apiServer;
   private AppnetStorage storage;
@@ -179,7 +179,7 @@ public class AppnetServer {
     log.info("Initializing request handlers...");
     didHandler = new DidHandler(identityNetwork, storage);
     vcHandler = new VcHandler(identityNetwork, storage);
-    demoHandler = new DemoHandler(identityNetwork, storage);
+    membershipHandler = new MembershipHandler(identityNetwork, storage);
   }
 
   /**
@@ -213,14 +213,14 @@ public class AppnetServer {
             .post("vc-submit", ctx -> vcHandler.submit(ctx, client, mirrorClient))
 
             // REST API endpoints for demo functions that in a normal environment would be run on the client side.
-            .post("demo/generate-did", ctx -> demoHandler.generateDid(ctx))
-            .post("demo/sign-did-message", ctx -> demoHandler.signDidMessage(ctx))
-            .post("demo/generate-driving-license", ctx -> demoHandler.generateDrivingLicense(ctx))
-            .post("demo/sign-vc-message", ctx -> demoHandler.signVcMessage(ctx))
-            .get("demo/get-credential-hash", ctx -> demoHandler.determineCredentialHash(ctx))
+            .post("membership/generate-did", ctx -> membershipHandler.generateDid(ctx))
+            .post("membership/sign-did-message", ctx -> membershipHandler.signDidMessage(ctx))
+            .post("membership/generate-membership", ctx -> membershipHandler.generateMembership(ctx))
+            .post("membership/sign-vc-message", ctx -> membershipHandler.signVcMessage(ctx))
+            .get("membership/get-credential-hash", ctx -> membershipHandler.determineCredentialHash(ctx))
 
             // Schema files
-            .files(f -> f.dir("schemas").files("driving-license-schema.json"))
+            .files(f -> f.dir("schemas").files("membership-schema.json"))
 
             // To stop the server gracefully
             .post("shutdown", ctx -> {
@@ -319,10 +319,10 @@ public class AppnetServer {
       throws HederaNetworkException, HederaStatusException {
     log.info("Setting up new identity network...");
     final Hbar fee = new Hbar(2);
-    final String appnetName = "Example appnet using Hedera Identity SDK";
-    final String didServerUrl = "http://localhost:5050/";
-    final String didTopicMemo = "Example appnet DID topic";
-    final String vcTopicMemo = "Example appnet VC topic";
+    final String appnetName = "Human Kind";
+    final String didServerUrl = "https://did.humankind.ly/";
+    final String didTopicMemo = "Human Kind DID";
+    final String vcTopicMemo = "Human Kind VC";
 
     identityNetwork = new HcsIdentityNetworkBuilder()
         .setNetwork(HederaNetwork.TESTNET)
