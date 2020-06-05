@@ -29,6 +29,9 @@ import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ratpack.server.RatpackServer;
+import io.netty.handler.ssl.SslContext;
+import io.netty.handler.ssl.SslContextBuilder;
+
 
 /**
  * Example appnet server that exposes DID and VC REST APIs.
@@ -186,10 +189,19 @@ public class AppnetServer {
    * Starts up the API server.
    *
    * @throws Exception In case startup failed.
+   * 
    */
   private void startApiServer() throws Exception {
+    Dotenv dotenv = Dotenv.configure().ignoreIfMissing().ignoreIfMalformed().load();
+    SslContext serverSslContext = SslContextBuilder.forServer(getClass().getResourceAsStream("/cert.pem"), getClass().getResourceAsStream("/cert.key")).build();
+
+    //appeared to work but is deprecated and throws some errors .ssl(SSLContexts.sslContext(getClass().getResource("/cert.jks"), dotenv.get("SSL_CERT_PASSWORD")))
     apiServer = RatpackServer.start(server -> server
-        .serverConfig(b -> b.port(SERVER_PORT).registerShutdownHook(true).findBaseDir())
+        .serverConfig(b -> b
+        .port(SERVER_PORT)
+        .ssl(serverSslContext)
+        .registerShutdownHook(true)
+        .findBaseDir())
         .handlers(chain -> chain
             .all(new CommonHeaders())
             .get(ctx -> ctx.render("This is an example appnet API server.\n"
