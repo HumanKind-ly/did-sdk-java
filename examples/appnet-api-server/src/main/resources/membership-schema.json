@@ -1,6 +1,6 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
-    "$id": "http://localhost:5050/membership-schema.json",
+    "$id": "https://did.humankind.ly/membership-schema.json",
     "type": "object",
     "title": "Membership schema",
     "description": "The root schema comprises the entire JSON document.",

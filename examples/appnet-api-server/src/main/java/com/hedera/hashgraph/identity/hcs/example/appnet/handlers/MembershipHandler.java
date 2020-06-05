@@ -152,7 +152,7 @@ public class MembershipHandler extends AppnetHandler {
             new Membership(req.getOwner(), req.getFirstName(), req.getLastName(),
                 req.getMembershipLevels()));
 
-        CredentialSchema schema = new CredentialSchema("http://localhost:5050/membership-schema.json",
+        CredentialSchema schema = new CredentialSchema("https://did.humankind.ly/membership-schema.json",
             MembershipDocument.CREDENTIAL_SCHEMA_TYPE);
 
         vc.setCredentialSchema(schema);
