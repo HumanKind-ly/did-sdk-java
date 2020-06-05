@@ -217,7 +217,7 @@ public class AppnetServer {
             .post("membership/sign-did-message", ctx -> membershipHandler.signDidMessage(ctx))
             .post("membership/generate-membership", ctx -> membershipHandler.generateMembership(ctx))
             .post("membership/sign-vc-message", ctx -> membershipHandler.signVcMessage(ctx))
-            .get("membership/get-credential-hash", ctx -> membershipHandler.determineCredentialHash(ctx))
+            .post("membership/get-credential-hash", ctx -> membershipHandler.determineCredentialHash(ctx))
 
             // Schema files
             .files(f -> f.dir("schemas").files("membership-schema.json"))
