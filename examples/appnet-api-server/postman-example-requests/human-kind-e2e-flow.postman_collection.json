@@ -1,0 +1,1056 @@
+{
+	"info": {
+		"_postman_id": "156488bd-eae6-424a-9051-5fa7df89a6a2",
+		"name": "Hedera DID Human Kind - e2e flow",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. MEMBERSHIP - Generate DID for Issuer",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "ced0a920-fa02-454c-95ff-4a5994bb817a",
+						"exec": [
+							"pm.collectionVariables.set(\"issuerPrivateKey\", postman.getResponseHeader(\"privateKey\"));",
+							"pm.collectionVariables.set(\"issuerDidDocument\", responseBody);",
+							"var jsonData = JSON.parse(responseBody);",
+							"pm.collectionVariables.set(\"issuerDid\", jsonData.id);",
+							"",
+							"pm.test(\"Issuer's private key is present\", function () {",
+							"    pm.response.to.have.header(\"privateKey\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/membership/generate-did",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"membership",
+						"generate-did"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "2. DID - CREATE message for Issuer",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "147b3c28-b8b9-4f59-823e-c72b25062f07",
+						"exec": [
+							"pm.collectionVariables.set(\"didMessage\", responseBody);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{{issuerDidDocument}}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/did",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"did"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "3. MEMBERSHIP - Sign CREATE message  by Issuer",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "e7aa0494-8825-495e-96cd-3ef6ca5c3d8c",
+						"exec": [
+							"pm.collectionVariables.set(\"didMessage\", responseBody);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "privateKey",
+						"value": "{{issuerPrivateKey}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{{didMessage}}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/membership/sign-did-message",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"membership",
+						"sign-did-message"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "4. DID - SUBMIT Issuer's DID Document",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{{didMessage}}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/did-submit",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"did-submit"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "5. DID  - RESOLVE Issuer's DID",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "b8931b7f-0db5-4ec7-a00f-61046ef3a284",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"did\": \"{{issuerDid}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/did",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"did"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "6. MEMBERSHIP - Generate DID for Owner",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "c388ee3c-3e4f-41b4-9d03-ea53944cc9d9",
+						"exec": [
+							"pm.collectionVariables.set(\"ownerPrivateKey\", postman.getResponseHeader(\"privateKey\"));",
+							"pm.collectionVariables.set(\"ownerDidDocument\", responseBody);",
+							"var jsonData = JSON.parse(responseBody);",
+							"pm.collectionVariables.set(\"ownerDid\", jsonData.id);",
+							"",
+							"pm.test(\"Owner's private key is present\", function () {",
+							"    pm.response.to.have.header(\"privateKey\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/membership/generate-did",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"membership",
+						"generate-did"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "7. MEMBERSHIP - Generate Membership document",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "6fd9da63-a59e-4be2-89d2-2c1a2cc9e33c",
+						"exec": [
+							"pm.collectionVariables.set(\"membership\", responseBody);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "privateKey",
+						"value": "{{issuerPrivateKey}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"issuer\": \"{{issuerDid}}\",\n\t\"owner\": \"{{ownerDid}}\",\n\t\"firstName\": \"Jacob\",\n\t\"lastName\": \"Shepherd\",\n\t\"membershipLevels\": [\"Bronze\"]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/membership/generate-membership",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"membership",
+						"generate-membership"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "8. MEMBERSHIP - Get membership credential hash",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "06b53398-0ce0-4925-9742-0b7b3d2f62a1",
+						"exec": [
+							"pm.collectionVariables.set(\"credentialHash\", responseBody);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{{membership}}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/membership/get-credential-hash",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"membership",
+						"get-credential-hash"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "9. VC - create ISSUE message",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "50b82139-9079-4133-b86d-e9fc43448800",
+						"exec": [
+							"pm.collectionVariables.set(\"vcMessage\", responseBody);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/vc/{{credentialHash}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"vc",
+						"{{credentialHash}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "10. MEMBERSHIP - sign ISSUE message  by Issuer",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "34ff111b-1a2a-4c13-a2a5-7dfcd23654b7",
+						"exec": [
+							"pm.collectionVariables.set(\"vcMessage\", responseBody);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "privateKey",
+						"type": "text",
+						"value": "{{issuerPrivateKey}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{{vcMessage}}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/membership/sign-vc-message",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"membership",
+						"sign-vc-message"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "11. VC - SUBMIT issuance message",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{{vcMessage}}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/vc-submit",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"vc-submit"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "12. VC - RESOLVE membership status",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "09da1067-613c-4bde-a751-60418405bae5",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/vc/{{credentialHash}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"vc",
+						"{{credentialHash}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "13. VC - create REVOKE message",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "72d85e04-2113-4136-b365-e7a4e37564d6",
+						"exec": [
+							"pm.collectionVariables.set(\"vcMessage\", responseBody);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/vc/{{credentialHash}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"vc",
+						"{{credentialHash}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "14. MEMBERSHIP - sign REVOKE message  by Issuer",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "445244a0-47ed-4854-a1e7-fe7db436cb64",
+						"exec": [
+							"pm.collectionVariables.set(\"vcMessage\", responseBody);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "privateKey",
+						"type": "text",
+						"value": "{{issuerPrivateKey}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{{vcMessage}}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/membership/sign-vc-message",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"membership",
+						"sign-vc-message"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "15. VC - SUBMIT revocation message",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{{vcMessage}}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/vc-submit",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"vc-submit"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "16. VC - RESOLVE membership status after revocation",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "9f873388-01fd-451c-b810-7dbb607aaaa5",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/vc/{{credentialHash}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"vc",
+						"{{credentialHash}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "17. DID - UPDATE message for Issuer",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "5df7f7e5-538c-4c25-9190-d82533df2de9",
+						"exec": [
+							"var jsonData = JSON.parse(pm.collectionVariables.get(\"issuerDidDocument\"));",
+							"pm.collectionVariables.set(\"issuerDidPublicKeyPart\", JSON.stringify(jsonData.publicKey));",
+							"pm.collectionVariables.set(\"issuerDidAuthenticationPart\", JSON.stringify(jsonData.authentication));"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "521e3d69-b916-4609-9079-5995e7269493",
+						"exec": [
+							"pm.collectionVariables.set(\"didMessage\", responseBody);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"@context\": \"https://www.w3.org/ns/did/v1\",\r\n    \"id\": \"{{issuerDid}}\",\r\n    \"publicKey\": {{issuerDidPublicKeyPart}},\r\n    \"authentication\": {{issuerDidAuthenticationPart}},\r\n    \"service\": [{\r\n    \t\"id\": \"#test-service\",\r\n    \t\"type\": \"VerifiableCredentialService\",\r\n    \t\"serviceEndpoint\": \"https://did.humankind.ly/vc/\"\r\n    }]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/did",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"did"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "18. MEMBERSHIP - Sign UPDATE message  by Issuer",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "0659329f-fcb0-45c5-902b-9d6382a2dca6",
+						"exec": [
+							"pm.collectionVariables.set(\"didMessage\", responseBody);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "privateKey",
+						"value": "{{issuerPrivateKey}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{{didMessage}}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/membership/sign-did-message",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"membership",
+						"sign-did-message"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "19. DID - SUBMIT Issuer's updated DID Document",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{{didMessage}}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/did-submit",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"did-submit"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "20. DID  - RESOLVE Issuer's DID after update",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "56e6690d-d486-47b9-9cee-e57267a6caa3",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "0a3c30dc-026c-432e-b350-d916b21b3c36",
+						"exec": [
+							"pm.collectionVariables.set(\"issuerDidDocument\", responseBody);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"did\": \"{{issuerDid}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/did",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"did"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "21. DID - DELETE message for Issuer",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "bbdb28cb-1cc3-4092-9fb3-84a172abdcc0",
+						"exec": [
+							"var jsonData = JSON.parse(pm.collectionVariables.get(\"issuerDidDocument\"));",
+							"pm.collectionVariables.set(\"issuerDidPublicKeyPart\", JSON.stringify(jsonData.publicKey));"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "59678153-ad95-4230-b2c1-74a5683d339d",
+						"exec": [
+							"pm.collectionVariables.set(\"didMessage\", responseBody);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"@context\": \"https://www.w3.org/ns/did/v1\",\r\n    \"id\": \"{{issuerDid}}\",\r\n    \"publicKey\": {{issuerDidPublicKeyPart}},\r\n    \"authentication\": []\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/did",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"did"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "22. MEMBERSHIP - Sign DELETE message  by Issuer",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "e0ad62a9-7928-4750-b2fa-416d3db85bbb",
+						"exec": [
+							"pm.collectionVariables.set(\"didMessage\", responseBody);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "privateKey",
+						"type": "text",
+						"value": "{{issuerPrivateKey}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{{didMessage}}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/membership/sign-did-message",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"membership",
+						"sign-did-message"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "23. DID - SUBMIT Issuer's document deletion",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{{didMessage}}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/did-submit",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"did-submit"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "24. DID  - RESOLVE Issuer's DID after delete should fail",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "8a41f6b3-48a9-4756-8f25-5f156cc6689d",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "14cf6993-a873-4040-9bc9-dfadf1a9d584",
+						"exec": [
+							"pm.collectionVariables.set(\"issuerDidDocument\", responseBody);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"did\": \"{{issuerDid}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/did",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"did"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "8794fce4-dee2-4ff9-a077-d838d975b199",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "236c438a-2767-4005-9fdf-c584d3348738",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "5cc783a9-73a2-45db-b818-ab67a16dd989",
+			"key": "baseUrl",
+			"value": "https://did.humankind.ly",
+			"type": "string"
+		},
+		{
+			"id": "08685600-a42e-4a8f-8a23-e4ad06af4a0f",
+			"key": "issuerPrivateKey",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"id": "2a48a024-f063-4598-8059-76d804776581",
+			"key": "issuerDid",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"id": "3819b233-35f5-416f-b076-bf59944b14a9",
+			"key": "issuerDidDocument",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"id": "367ca96c-d50c-4f51-bc10-3ce4f0ebbbc5",
+			"key": "didMessage",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"id": "917d67e6-17a5-4591-93f6-4f589a4b9361",
+			"key": "ownerDid",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"id": "9ddfcc09-18c1-45e2-9dbd-906328097395",
+			"key": "ownerDidDocument",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"id": "d97f14b5-1356-4343-87cf-cc097aa6cf59",
+			"key": "ownerPrivateKey",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"id": "cbb22ad9-e487-4065-8c69-5d2ed0206dcb",
+			"key": "membership",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"id": "96b66258-5e99-4fd0-9bbb-5d0f801e90f4",
+			"key": "membershipHash",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"id": "97211a31-e626-40a5-a9a9-5ae78337cca8",
+			"key": "credentialHash",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"id": "ffdfa92c-4cc7-4a12-82d9-0edf457f335c",
+			"key": "vcMessage",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"id": "99d574f6-95be-4d80-b6b5-bb1b927981f4",
+			"key": "issuerDidAuthenticationPart",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"id": "72592ded-cf6e-457e-ac04-1254bb2f994a",
+			"key": "issuerDidPublicKeyPart",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"protocolProfileBehavior": {}
+}
